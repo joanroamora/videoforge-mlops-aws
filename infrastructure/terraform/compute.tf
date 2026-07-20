@@ -90,9 +90,9 @@ resource "aws_ecs_capacity_provider" "nodes" {
     auto_scaling_group_arn = aws_autoscaling_group.ecs_asg.arn
 
     managed_scaling {
-      maximum_scaling_step_size = 2
+      maximum_scaling_step_size = 1
       minimum_scaling_step_size = 1
-      status                    = "ENABLED"
+      status                    = "DISABLED"
       target_capacity           = 100
     }
   }
