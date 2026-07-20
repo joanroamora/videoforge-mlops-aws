@@ -30,14 +30,14 @@ variable "instance_type" {
 
 variable "desired_capacity" {
   type        = number
-  description = "Capacidad deseada de instancias EC2 en el Auto Scaling Group"
-  default     = 1
+  description = "Capacidad deseada de instancias EC2 en el Auto Scaling Group (0 por defecto para ahorrar costos hasta que la imagen Docker esté en ECR)"
+  default     = 0
 }
 
 variable "min_capacity" {
   type        = number
   description = "Capacidad mínima de instancias EC2"
-  default     = 1
+  default     = 0
 }
 
 variable "max_capacity" {
