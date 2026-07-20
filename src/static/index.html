@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>VideoForge - Plataforma de Generación de Video con IA (LTX-Video v2.3)</title>
+    <title>VideoForge - AI Video Generation Platform (LTX-Video v2.3)</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;600;700;800&display=swap" rel="stylesheet">
@@ -100,13 +100,36 @@
             box-shadow: 0 0 10px #10b981;
         }
 
-        /* Layout Main */
+        /* Layout Container */
         main {
-            max-width: 1300px;
-            margin: 30px auto;
-            padding: 0 20px;
             flex: 1;
+            max-width: 1400px;
             width: 100%;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        .hero-banner {
+            text-align: center;
+            margin-bottom: 36px;
+        }
+
+        .hero-banner h1 {
+            font-family: 'Outfit', sans-serif;
+            font-size: 42px;
+            font-weight: 800;
+            line-height: 1.2;
+            margin-bottom: 12px;
+            background: linear-gradient(180deg, #ffffff 0%, #cbd5e1 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .hero-banner p {
+            color: var(--text-muted);
+            font-size: 16px;
+            max-width: 650px;
+            margin: 0 auto;
         }
 
         .grid-container {
@@ -121,17 +144,25 @@
             }
         }
 
-        /* Cards Component */
+        /* Glassmorphic Cards */
         .glass-card {
             background: var(--bg-card);
-            border: 1px solid var(--bg-card-border);
             backdrop-filter: blur(16px);
+            border: 1px solid var(--bg-card-border);
             border-radius: var(--radius-lg);
-            padding: 30px;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+            padding: 28px;
             display: flex;
             flex-direction: column;
-            gap: 22px;
+            gap: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+
+            /* Interactive border glow effect */
+            position: relative;
+            transition: all 0.3s ease;
+        }
+
+        .glass-card:hover {
+            border-color: rgba(0, 242, 254, 0.2);
         }
 
         .card-header {
@@ -145,10 +176,6 @@
             padding-bottom: 14px;
         }
 
-        .card-header span {
-            color: var(--primary-glow);
-        }
-
         /* Form Controls */
         .form-group {
             display: flex;
@@ -159,49 +186,33 @@
         label {
             font-size: 13px;
             font-weight: 600;
-            color: var(--text-muted);
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
+            color: var(--text-main);
             display: flex;
             justify-content: space-between;
         }
 
-        label small {
-            color: var(--primary-glow);
-            font-weight: 400;
-            text-transform: none;
-        }
-
-        textarea, input[type="text"], input[type="number"], select {
-            width: 100%;
-            background: rgba(10, 14, 26, 0.7);
+        input[type="text"], input[type="number"], textarea, select {
+            background: rgba(7, 9, 14, 0.6);
             border: 1px solid var(--bg-card-border);
-            border-radius: var(--radius-sm);
-            padding: 12px 16px;
             color: var(--text-main);
+            padding: 12px 14px;
+            border-radius: var(--radius-sm);
             font-size: 14px;
-            transition: all 0.3s ease;
+            outline: none;
+            transition: all 0.2s ease;
         }
 
-        textarea:focus, input[type="text"]:focus, input[type="number"]:focus, select:focus {
-            outline: none;
+        input[type="text"]:focus, input[type="number"]:focus, textarea:focus, select:focus {
             border-color: var(--primary-glow);
-            box-shadow: 0 0 15px rgba(0, 242, 254, 0.2);
+            box-shadow: 0 0 12px rgba(0, 242, 254, 0.2);
         }
 
         textarea {
-            min-height: 90px;
             resize: vertical;
+            min-height: 90px;
         }
 
-        /* Range Sliders */
-        input[type="range"] {
-            width: 100%;
-            accent-color: var(--primary-glow);
-            cursor: pointer;
-        }
-
-        /* Dropzone */
+        /* Drag & Drop Zone */
         .dropzone {
             border: 2px dashed rgba(0, 242, 254, 0.3);
             border-radius: var(--radius-sm);
@@ -229,24 +240,18 @@
         }
 
         .dropzone-text {
-            color: var(--text-muted);
             font-size: 13px;
-        }
-
-        .dropzone-text strong {
-            color: var(--primary-glow);
+            color: var(--text-muted);
         }
 
         .img-preview {
             max-height: 140px;
             border-radius: var(--radius-sm);
-            object-fit: cover;
-            margin-top: 10px;
+            margin: 10px auto 0 auto;
             display: none;
-            border: 1px solid var(--primary-glow);
         }
 
-        /* Preset Prompts */
+        /* Presets */
         .presets-bar {
             display: flex;
             gap: 8px;
@@ -350,8 +355,8 @@
         }
 
         .progress-bar-fill {
-            height: 100%;
             width: 0%;
+            height: 100%;
             background: linear-gradient(90deg, #00f2fe, #ff007f);
             transition: width 0.4s ease;
         }
@@ -359,138 +364,133 @@
         /* Footer */
         footer {
             text-align: center;
-            padding: 20px;
-            color: var(--text-muted);
+            padding: 24px;
             font-size: 12px;
+            color: var(--text-muted);
             border-top: 1px solid var(--bg-card-border);
-            margin-top: 40px;
-        }
-
-        .doc-link {
-            color: var(--primary-glow);
-            text-decoration: none;
-            font-weight: 600;
-        }
-
-        .doc-link:hover {
-            text-decoration: underline;
+            background: rgba(7, 9, 14, 0.9);
+            margin-top: auto;
         }
     </style>
 </head>
 <body>
 
-    <!-- Header -->
+    <!-- Top Header Navigation -->
     <header>
         <div class="logo-container">
-            <div class="logo-title">VideoForge</div>
-            <div class="badge-version">LTX-Video v2.3</div>
+            <span class="logo-title">VideoForge</span>
+            <span class="badge-version">v2.3 ML Studio</span>
         </div>
         <div class="status-pill">
             <div class="dot-status" id="hwDot"></div>
-            <span id="hwStatus">AWS ECS GPU (Active)</span>
-            <a href="/docs" target="_blank" class="doc-link" style="margin-left:10px;">OpenAPI Docs ↗</a>
+            <span id="hwStatus">Checking Hardware Cluster...</span>
         </div>
     </header>
 
-    <!-- Main Content -->
+    <!-- Hero Content -->
     <main>
+        <div class="hero-banner">
+            <h1>Generative Video Synthesis Engine</h1>
+            <p>Deploy and orchestrate high-fidelity Image-to-Video diffusion models powered by LTX-Video v2.3 and AWS ECS Cluster Infrastructure.</p>
+        </div>
+
         <div class="grid-container">
             
-            <!-- Left Column: Form Controls -->
+            <!-- Left Column: Input Form & Configuration Parameters -->
             <div class="glass-card">
                 <div class="card-header">
-                    <span>🎬</span> Parámetros de Generación Configurarables
+                    <span>🎬</span> Configurable Generation Parameters
                 </div>
 
-                <!-- Imagen de Referencia -->
+                <!-- Reference Image -->
                 <div class="form-group">
-                    <label>1. Imagen de Origen / Referencia</label>
+                    <label>1. Source / Reference Image</label>
                     <div class="dropzone" id="dropzone">
                         <input type="file" id="imageInput" accept="image/*">
                         <div class="dropzone-text">
-                            <strong>Haz clic aquí</strong> o arrastra una imagen (PNG, JPG)
+                            <strong>Click to upload</strong> or drag an image here (PNG, JPG)
                         </div>
                         <img id="imgPreview" class="img-preview" alt="Preview">
                     </div>
-                    <input type="text" id="s3UriInput" placeholder="O ingresa una URI S3/HTTP (e.g. s3://bucket/photo.png)" style="margin-top:6px;">
+                    <input type="text" id="s3UriInput" placeholder="Or enter an S3/HTTP URI (e.g. s3://bucket/photo.png)" style="margin-top:6px;">
                 </div>
 
-                <!-- Prompt -->
+                <!-- Text Prompt -->
                 <div class="form-group">
-                    <label>2. Prompt de Animación por Texto</label>
-                    <textarea id="promptInput" placeholder="Describe el movimiento, cámara y efectos de iluminación deseados..."></textarea>
+                    <label>2. Text Animation Prompt</label>
+                    <textarea id="promptInput" placeholder="Describe camera motion, lighting effects, character movement, and atmosphere..."></textarea>
                     
                     <!-- Presets -->
                     <div class="presets-bar">
                         <div class="preset-chip" onclick="setPreset('Futuristic cyberpunk car driving in glowing neon rain with high speed cinematic camera')">⚡ Cyberpunk</div>
-                        <div class="preset-chip" onclick="setPreset('Cinematic drone orbital camera around an ancient temple in misty mountains')">🏔️ Montaña Mística</div>
+                        <div class="preset-chip" onclick="setPreset('Cinematic drone orbital camera around an ancient temple in misty mountains')">🏔️ Mystical Mountain</div>
                         <div class="preset-chip" onclick="setPreset('Neon anime portrait with glowing eyes, dynamic hair animation and wind effects')">✨ Anime Neon</div>
                     </div>
                 </div>
 
-                <!-- Parámetros de Generación Ajustables -->
+                <!-- Configurable Hyperparameters -->
                 <details open style="color:var(--text-muted); font-size:13px; border-top: 1px solid var(--bg-card-border); padding-top:14px;">
-                    <summary style="font-weight:700; color:var(--text-main); cursor:pointer; margin-bottom:14px;">⚙️ Variables de IA y Calidad (Optimizadas por Defecto)</summary>
+                    <summary style="font-weight:700; color:var(--text-main); cursor:pointer; margin-bottom:14px;">⚙️ AI Model Hyperparameters (Optimized Defaults)</summary>
                     
                     <div style="display:grid; grid-template-columns: 1fr 1fr; gap:16px;">
                         
                         <!-- Guidance Scale -->
                         <div class="form-group">
-                            <label>Fidelidad al Prompt (CFG) <small id="guidanceVal">3.0</small></label>
+                            <label>Prompt Guidance (CFG) <small id="guidanceVal">3.0</small></label>
                             <input type="range" id="guidanceInput" min="1.0" max="7.0" step="0.5" value="3.0" oninput="document.getElementById('guidanceVal').innerText = this.value">
                         </div>
 
-                        <!-- Pasos de Inferencia -->
+                        <!-- Inference Steps -->
                         <div class="form-group">
-                            <label>Calidad / Pasos <small id="stepsVal">30 Pasos</small></label>
-                            <select id="stepsInput" onchange="document.getElementById('stepsVal').innerText = this.value + ' Pasos'">
-                                <option value="15">15 Pasos (Rápido / Borrador)</option>
-                                <option value="30" selected>30 Pasos (Recomendado - Óptimo)</option>
-                                <option value="50">50 Pasos (Ultra Detalle / Lento)</option>
+                            <label>Quality / Steps <small id="stepsVal">30 Steps</small></label>
+                            <select id="stepsInput" onchange="document.getElementById('stepsVal').innerText = this.value + ' Steps'">
+                                <option value="15">15 Steps (Fast Draft)</option>
+                                <option value="30" selected>30 Steps (Recommended - Optimal)</option>
+                                <option value="50">50 Steps (Ultra Detail / High VRAM)</option>
                             </select>
                         </div>
 
-                        <!-- Intensidad de Movimiento -->
+                        <!-- Motion Scale -->
                         <div class="form-group">
-                            <label>Dinámica de Movimiento</label>
+                            <label>Motion Dynamics</label>
                             <select id="motionInput">
-                                <option value="0.5">0.5 - Suave (Retratos / Naturaleza)</option>
-                                <option value="1.0" selected>1.0 - Balanceado (Cinematográfico)</option>
-                                <option value="2.0">2.0 - Alta Acción (Carreras / Deportes)</option>
+                                <option value="0.5">0.5 - Subtle (Portraits / Nature)</option>
+                                <option value="1.0" selected>1.0 - Balanced (Cinematic)</option>
+                                <option value="2.0">2.0 - High Action (Sports / Racing)</option>
                             </select>
                         </div>
 
-                        <!-- Semilla Aleatoria / Reproducible -->
+                        <!-- Random Seed -->
                         <div class="form-group">
-                            <label>Semilla (Seed)</label>
-                            <input type="number" id="seedInput" value="-1" placeholder="-1 = Aleatorio">
+                            <label>Random Seed</label>
+                            <input type="number" id="seedInput" value="-1" placeholder="-1 = Random">
                         </div>
 
                         <!-- Frames -->
                         <div class="form-group">
-                            <label>Duración (Frames)</label>
-                            <input type="number" id="framesInput" value="121" readonly title="121 frames = ~5 segundos">
+                            <label>Frame Length</label>
+                            <input type="number" id="framesInput" value="121" readonly title="121 frames = ~5 seconds">
                         </div>
 
                         <!-- FPS -->
                         <div class="form-group">
-                            <label>FPS</label>
-                            <input type="number" id="fpsInput" value="24" readonly title="24 FPS Estándar Cine">
+                            <label>Frame Rate (FPS)</label>
+                            <input type="number" id="fpsInput" value="24" readonly title="24 FPS Cinema Standard">
                         </div>
 
                     </div>
                 </details>
 
-                <!-- Botón Generar -->
+                <!-- Generate Button -->
                 <button class="btn-generate" id="generateBtn" onclick="submitGeneration()">
-                    🚀 Generar Video con IA
+                    🚀 Generate AI Video
                 </button>
             </div>
 
             <!-- Right Column: Output Viewport -->
             <div class="glass-card">
                 <div class="card-header">
-                    <span>📺</span> Renderizado & Vista Previa
+                    <span>📺</span> Video Render & Live Preview
                 </div>
 
                 <div class="output-viewport" id="viewport">
@@ -498,14 +498,14 @@
                     <!-- State Idle -->
                     <div id="idleState" style="text-align:center; color:var(--text-muted);">
                         <div style="font-size:48px; margin-bottom:12px;">✨</div>
-                        <p style="font-size:15px; font-weight:500;">Listo para la generación</p>
-                        <p style="font-size:12px; opacity:0.7;">Sube una imagen y ajusta tus variables para iniciar</p>
+                        <p style="font-size:15px; font-weight:500;">Ready for Generation</p>
+                        <p style="font-size:12px; opacity:0.7;">Upload a reference image and configure hyperparameters to begin</p>
                     </div>
 
                     <!-- State Loading -->
                     <div class="loader-box" id="loaderState">
                         <div class="spinner"></div>
-                        <p id="statusMsg" style="font-weight:600; color:var(--primary-glow);">Encolando trabajo en AWS ECS GPU...</p>
+                        <p id="statusMsg" style="font-weight:600; color:var(--primary-glow);">Queueing worker job on AWS ECS Cluster...</p>
                         <div class="progress-bar-bg">
                             <div class="progress-bar-fill" id="progressFill"></div>
                         </div>
@@ -519,7 +519,7 @@
                 <!-- Actions output -->
                 <div id="outputActions" style="display:none; gap:10px;">
                     <a id="downloadBtn" href="#" target="_blank" download class="btn-generate" style="flex:1; text-decoration:none;">
-                        ⬇️ Descargar Video MP4
+                        ⬇️ Download MP4 Video
                     </a>
                 </div>
 
@@ -547,7 +547,7 @@
                         document.getElementById('hwStatus').innerText = `GPU: ${data.device_name} (${data.vram_total_gb} GB VRAM)`;
                     } else {
                         document.getElementById('hwDot').style.backgroundColor = '#f59e0b';
-                        document.getElementById('hwStatus').innerText = `Modo CPU / Simulación AWS`;
+                        document.getElementById('hwStatus').innerText = `CPU Mode / AWS Simulation`;
                     }
                 }
             } catch(e) {
@@ -603,7 +603,7 @@
             let imageFile = document.getElementById('s3UriInput').value.trim() || currentS3Uri;
 
             if(!prompt) {
-                alert("Por favor ingresa un prompt de texto para la animación.");
+                alert("Please enter a text animation prompt.");
                 return;
             }
 
@@ -625,7 +625,7 @@
             document.getElementById('loaderState').style.display = 'flex';
             document.getElementById('generateBtn').disabled = true;
             document.getElementById('progressFill').style.width = '10%';
-            document.getElementById('statusMsg').innerText = 'Encolando en la infraestructura GPU...';
+            document.getElementById('statusMsg').innerText = 'Queueing worker job on GPU cluster...';
 
             try {
                 const response = await fetch('/api/v1/generate', {
@@ -644,7 +644,7 @@
                 });
 
                 if(!response.ok) {
-                    throw new Error("Error en la respuesta del servidor");
+                    throw new Error("Server response error");
                 }
 
                 const data = await response.json();
@@ -655,7 +655,7 @@
                 pollJobStatus(data.job_id);
 
             } catch(err) {
-                alert("Error al enviar el trabajo de generación: " + err.message);
+                alert("Error submitting generation job: " + err.message);
                 resetUI();
             }
         }
@@ -670,20 +670,20 @@
                         const job = await res.json();
 
                         if(job.status === 'processing') {
-                            document.getElementById('statusMsg').innerText = 'Ejecutando inferencia LTX-Video 2.3 en GPU...';
+                            document.getElementById('statusMsg').innerText = 'Executing LTX-Video v2.3 inference...';
                             progress = Math.min(progress + 10, 85);
                             document.getElementById('progressFill').style.width = progress + '%';
                         } else if(job.status === 'completed') {
                             clearInterval(interval);
                             document.getElementById('progressFill').style.width = '100%';
-                            document.getElementById('statusMsg').innerText = '¡Generación Completada!';
+                            document.getElementById('statusMsg').innerText = 'Generation Complete!';
                             
                             setTimeout(() => {
                                 showVideo(job.video_url || 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4');
                             }, 500);
                         } else if(job.status === 'failed') {
                             clearInterval(interval);
-                            alert("El trabajo falló: " + (job.error || "Error desconocido"));
+                            alert("Job failed: " + (job.error || "Unknown error"));
                             resetUI();
                         }
                     }

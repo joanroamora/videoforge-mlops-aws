@@ -1,56 +1,58 @@
-# Infrastructure Architecture (AWS ECS + GPU Nodes)
+# Infrastructure as Code (IaC) Documentation - VideoForge AWS Cloud
 
-This directory contains deployment manifests and architecture specifications for VideoForge running on **AWS Elastic Container Service (ECS)** with GPU-accelerated capacity.
+This directory contains the modular Terraform manifests for provisioning the complete serverless and containerized AWS infrastructure for VideoForge.
 
-## Architecture Overview
+---
+
+## 🏛️ Infrastructure Components
 
 ```
-                      +-----------------------------+
-                      |    Application Load Balancer |
-                      +--------------+--------------+
-                                     |
-                                     v
-                      +-----------------------------+
-                      |   AWS ECS Service (Fargate /|
-                      |   EC2 G5 GPU Instance Pool) |
-                      +--------------+--------------+
-                                     |
-                 +-------------------+-------------------+
-                 |                                       |
-                 v                                       v
-   +---------------------------+           +---------------------------+
-   | Amazon S3                 |           | Amazon ECR                |
-   | - Model Weights (v2.3)    |           | - Docker Image            |
-   | - Input Images            |           |   (NVIDIA CUDA 12.1)      |
-   | - Rendered MP4 Videos     |           +---------------------------+
-   +---------------------------+
+infrastructure/terraform/
+├── main.tf           # Terraform AWS provider setup (us-east-1), constraints & tags
+├── variables.tf      # Configurable parameters (use_gpu, instance_type, desired_capacity)
+├── networking.tf     # VPC (10.0.0.0/16), 2 Public Subnets, 2 Private Subnets, NAT Gateway, ALB
+├── compute.tf        # ECS Cluster, Task Definition template, Launch Template, Auto Scaling Group
+├── storage.tf        # ECR Repository (videoforge-ltx) & S3 Buckets (weights, inputs, outputs)
+├── iam.tf            # Task Execution Role, Task Role & S3 Least-Privilege Policies
+└── outputs.tf        # Exported outputs (ALB DNS name, ECR URI, S3 bucket names)
 ```
 
-## Deployment with Terraform
+---
 
-We provide a complete Infrastructure as Code (IaC) setup using Terraform in [`infrastructure/terraform`](file:///home/joanr/agentic-platforms/videoForge/infrastructure/terraform).
+## 🔧 Core Parameters (`variables.tf`)
 
-### Provisioned Resources:
-1. **Amazon VPC**: Public & Private subnets, Internet Gateway, NAT Gateway, Security Groups.
-2. **Amazon ECR**: Container repository `videoforge-ltx` with lifecycle retention policy.
-3. **Amazon S3**: Buckets for model weights, input images, and rendered videos.
-4. **AWS IAM**: Execution Role, Task Role with S3 permissions, and EC2 Instance Profile.
-5. **AWS ECS Cluster & EC2 Auto Scaling**: `g5.xlarge` GPU instances with NVIDIA Container Toolkit runtime and GPU Capacity Provider.
-6. **Application Load Balancer (ALB)**: HTTP load balancer routing traffic on port 80 to FastAPI on container port 8000.
+| Parameter | Type | Default | Description |
+| :--- | :--- | :--- | :--- |
+| `aws_region` | `string` | `"us-east-1"` | Target AWS region for deployment |
+| `use_gpu` | `bool` | `false` | `true` for GPU `g5.xlarge`, `false` for CPU `c5.xlarge` |
+| `instance_type` | `string` | `"c5.xlarge"` | EC2 instance type (`g5.xlarge` or `c5.xlarge`) |
+| `desired_capacity` | `number` | `0` | EC2 instance count ($0.00 cost optimization during Docker build) |
+| `max_capacity` | `number` | `1` | Strict upper limit of EC2 instances to prevent uncontrolled cost scaling |
 
-### Automated Deployment Commands:
-```bash
-# Make deployment script executable
-chmod +x deploy_aws.sh
+---
 
-# Deploy full stack to AWS
-./deploy_aws.sh
-```
+## 🔐 IAM Security & Policies
 
-Or manually:
+- **ECS Task Execution Role**: Grants permission for ECS agent to pull Docker images from ECR and stream logs to CloudWatch (`/ecs/videoforge`).
+- **ECS Task Role**: Grants least-privilege read/write access strictly to `videoforge-inputs-*`, `videoforge-outputs-*`, and `videoforge-model-weights-*` S3 buckets.
+- **Security Groups**:
+  - `alb_sg`: Opens port 80 to public internet traffic.
+  - `ecs_nodes_sg`: Restricts container port 8000 ingress **strictly to requests originated from the ALB Security Group**.
+
+---
+
+## 🛠️ Manual Operations Guide
+
+### 1. Provision Infrastructure Only
 ```bash
 cd infrastructure/terraform
 terraform init
-terraform apply
+terraform apply -auto-approve
 ```
 
+### 2. Teardown Infrastructure
+To permanently destroy all 44 AWS resources (including S3 objects and ECR images via `force_destroy = true`):
+```bash
+cd infrastructure/terraform
+terraform destroy -auto-approve
+```
