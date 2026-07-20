@@ -1,0 +1,51 @@
+[
+  {
+    "name": "${CONTAINER_NAME}",
+    "image": "${ECR_IMAGE_URI}",
+    "cpu": 4096,
+    "memory": 14000,
+    "essential": true,
+    "portMappings": [
+      {
+        "containerPort": ${CONTAINER_PORT},
+        "hostPort": ${CONTAINER_PORT},
+        "protocol": "tcp"
+      }
+    ],
+    "resourceRequirements": ${RESOURCE_REQUIREMENTS},
+    "environment": [
+      {
+        "name": "MODEL_S3_BUCKET",
+        "value": "${MODEL_S3_BUCKET}"
+      },
+      {
+        "name": "S3_BUCKET",
+        "value": "${MODEL_S3_BUCKET}"
+      },
+      {
+        "name": "S3_WEIGHTS_KEY",
+        "value": "ltx-video/v2.3/"
+      },
+      {
+        "name": "AWS_REGION",
+        "value": "${AWS_REGION}"
+      },
+      {
+        "name": "FORCE_CPU",
+        "value": "${FORCE_CPU}"
+      },
+      {
+        "name": "PORT",
+        "value": "${CONTAINER_PORT}"
+      }
+    ],
+    "logConfiguration": {
+      "logDriver": "awslogs",
+      "options": {
+        "awslogs-group": "${LOG_GROUP_NAME}",
+        "awslogs-region": "${AWS_REGION}",
+        "awslogs-stream-prefix": "videoforge"
+      }
+    }
+  }
+]
