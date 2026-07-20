@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
 set -e
 
+export BUILDKIT_PROGRESS=plain
+
 REGION="${AWS_REGION:-us-east-1}"
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 TERRAFORM_DIR="$SCRIPT_DIR/infrastructure/terraform"
@@ -33,8 +35,8 @@ echo "🔐 [2/4] Autenticando Docker con Amazon ECR ($REGION)..."
 aws ecr get-login-password --region "$REGION" | docker login --username AWS --password-stdin "$ECR_URL"
 
 # 4. Construcción y Push de la Imagen Docker
-echo "🐳 [3/4] Construyendo la imagen Docker para GPU..."
-docker build -f docker/Dockerfile -t "$ECR_URL:latest" .
+echo "🐳 [3/4] Construyendo la imagen Docker para GPU (Salida de log en texto plano)..."
+docker build --progress=plain -f docker/Dockerfile -t "$ECR_URL:latest" .
 
 echo "⬆️  Subiendo la imagen a Amazon ECR..."
 docker push "$ECR_URL:latest"

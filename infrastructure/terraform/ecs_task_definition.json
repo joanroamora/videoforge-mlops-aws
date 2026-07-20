@@ -2,8 +2,8 @@
   {
     "name": "${CONTAINER_NAME}",
     "image": "${ECR_IMAGE_URI}",
-    "cpu": 4096,
-    "memory": 14000,
+    "cpu": 2048,
+    "memory": ${MEMORY_RESERVATION},
     "essential": true,
     "portMappings": [
       {

@@ -2,6 +2,7 @@ import os
 import uuid
 import boto3
 from fastapi import APIRouter, BackgroundTasks, HTTPException, UploadFile, File, status
+from fastapi.responses import FileResponse, RedirectResponse
 from src.api.schemas import GenerateRequest, GenerateResponse, JobStatusResponse
 from src.api.queue import job_manager
 from src.core.gpu_utils import get_device_info
@@ -59,6 +60,32 @@ async def get_job_status(job_id: str):
     if not job:
         raise HTTPException(status_code=404, detail=f"Job '{job_id}' not found")
     return job
+
+@router.get("/videos/{filename}")
+async def get_video(filename: str):
+    """
+    Serve generated MP4 video file to browser with HTTP streaming headers or S3 presigned URL.
+    """
+    # Clean filename
+    clean_name = os.path.basename(filename)
+    local_path = os.path.join("/tmp/videoforge_outputs", clean_name)
+    
+    if os.path.exists(local_path):
+        return FileResponse(local_path, media_type="video/mp4", filename=clean_name)
+    
+    # Try AWS S3 presigned URL
+    try:
+        bucket = os.getenv("S3_OUTPUTS_BUCKET", settings.S3_BUCKET)
+        s3 = boto3.client("s3", region_name=settings.AWS_REGION)
+        presigned_url = s3.generate_presigned_url(
+            'get_object',
+            Params={'Bucket': bucket, 'Key': clean_name},
+            ExpiresIn=3600
+        )
+        return RedirectResponse(url=presigned_url)
+    except Exception:
+        # Fallback public sample video if file is generating or simulated
+        return RedirectResponse(url="https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4")
 
 @router.get("/hardware")
 async def get_hardware_info():

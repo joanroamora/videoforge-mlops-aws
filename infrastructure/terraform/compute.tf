@@ -126,6 +126,7 @@ resource "aws_ecs_task_definition" "app" {
     AWS_REGION            = var.aws_region
     LOG_GROUP_NAME        = aws_cloudwatch_log_group.ecs.name
     FORCE_CPU             = var.use_gpu ? "false" : "true"
+    MEMORY_RESERVATION    = var.use_gpu ? 14000 : 6000
     RESOURCE_REQUIREMENTS = var.use_gpu ? jsonencode([{ type = "GPU", value = "1" }]) : "[]"
   })
 }

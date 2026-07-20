@@ -696,10 +696,24 @@
         function showVideo(url) {
             document.getElementById('loaderState').style.display = 'none';
             const video = document.getElementById('videoPlayer');
-            video.src = url;
+            
+            // Convert s3:// URIs to playable HTTP endpoint /api/v1/videos/{filename}
+            let playableUrl = url;
+            if (url && url.startsWith('s3://')) {
+                const parts = url.split('/');
+                const filename = parts[parts.length - 1];
+                playableUrl = `/api/v1/videos/${filename}`;
+            }
+            
+            video.src = playableUrl;
+            video.load();
             video.style.display = 'block';
+            video.play().catch(e => console.log("Autoplay notice:", e));
+
+            const downloadBtn = document.getElementById('downloadBtn');
+            downloadBtn.href = playableUrl;
+            downloadBtn.setAttribute('download', 'videoforge_result.mp4');
             document.getElementById('outputActions').style.display = 'flex';
-            document.getElementById('downloadBtn').href = url;
             document.getElementById('generateBtn').disabled = false;
         }
 

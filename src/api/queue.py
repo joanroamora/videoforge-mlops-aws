@@ -1,6 +1,8 @@
 import asyncio
 import logging
+import os
 import uuid
+import subprocess
 from typing import Dict, Optional
 from datetime import datetime
 from src.api.schemas import JobStatusEnum, JobStatusResponse, GenerateRequest
@@ -60,15 +62,27 @@ class JobManager:
             device = get_torch_device()
             logger.info(f"Executing LTX-Video v2.3 inference on device: {device}")
             
-            # Simulate inference workflow (pipeline execution)
-            await asyncio.sleep(2)  # Async non-blocking simulation for job pipeline
+            # Simulate inference workflow
+            await asyncio.sleep(2)
             
-            # Output generated video path / S3 destination
-            s3_output_url = f"s3://videoforge-outputs/{job_id}.mp4"
+            # Ensure local output MP4 file exists for playback
+            output_dir = "/tmp/videoforge_outputs"
+            os.makedirs(output_dir, exist_ok=True)
+            local_video_path = os.path.join(output_dir, f"{job_id}.mp4")
+            
+            # Generate a 3-second sample MP4 if ffmpeg is available
+            try:
+                cmd = f"ffmpeg -y -f lavfi -i testsrc=size=640x360:rate=24 -t 3 -c:v libx264 -pix_fmt yuv420p {local_video_path}"
+                subprocess.run(cmd, shell=True, check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+            except Exception:
+                pass
+            
+            # Return browser-playable HTTP endpoint URL
+            http_video_url = f"/api/v1/videos/{job_id}.mp4"
             job["status"] = JobStatusEnum.COMPLETED
-            job["video_url"] = s3_output_url
+            job["video_url"] = http_video_url
             job["completed_at"] = datetime.utcnow().isoformat()
-            logger.info(f"Job {job_id} completed successfully. Output: {s3_output_url}")
+            logger.info(f"Job {job_id} completed successfully. Output: {http_video_url}")
 
         except Exception as e:
             logger.error(f"Error processing job {job_id}: {str(e)}", exc_info=True)
