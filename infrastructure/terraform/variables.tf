@@ -1,53 +1,53 @@
 variable "aws_region" {
   type        = string
-  description = "Región de AWS para el despliegue"
+  description = "Target AWS region for deployment"
   default     = "us-east-1"
 }
 
 variable "environment" {
   type        = string
-  description = "Entorno de despliegue (prod, dev, staging)"
+  description = "Deployment environment (prod, dev, staging)"
   default     = "prod"
 }
 
 variable "project_name" {
   type        = string
-  description = "Prefijo para los nombres de recursos"
+  description = "Resource naming prefix"
   default     = "videoforge"
 }
 
 variable "use_gpu" {
   type        = bool
-  description = "Definir en true para instancias GPU G5. Definir en false para pruebas con CPU."
+  description = "Set to true for G5 GPU instances (requires GPU vCPU quota > 0). Set to false for cost-optimized CPU testing."
   default     = false
 }
 
 variable "instance_type" {
   type        = string
-  description = "Tipo de instancia EC2 para ECS (c5.xlarge para CPU)"
+  description = "EC2 instance type for ECS cluster (g5.xlarge for GPU, c5.xlarge for CPU)"
   default     = "c5.xlarge"
 }
 
 variable "desired_capacity" {
   type        = number
-  description = "Capacidad deseada de instancias EC2 en el Auto Scaling Group"
+  description = "Desired EC2 instance capacity in Auto Scaling Group (0 default for $0.00 build cost optimization)"
   default     = 0
 }
 
 variable "min_capacity" {
   type        = number
-  description = "Capacidad mínima de instancias EC2"
+  description = "Minimum EC2 instance capacity"
   default     = 0
 }
 
 variable "max_capacity" {
   type        = number
-  description = "Capacidad máxima de instancias EC2"
+  description = "Maximum EC2 instance capacity (strictly capped at 1 for cost control)"
   default     = 1
 }
 
 variable "container_port" {
   type        = number
-  description = "Puerto de la aplicación en el contenedor Docker"
+  description = "Application port inside Docker container"
   default     = 8000
 }
