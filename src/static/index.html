@@ -1,0 +1,648 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VideoForge - Plataforma de Generación de Video con IA (LTX-Video v2.3)</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-dark: #07090e;
+            --bg-card: rgba(18, 22, 36, 0.75);
+            --bg-card-border: rgba(255, 255, 255, 0.08);
+            --primary-glow: #00f2fe;
+            --secondary-glow: #4facfe;
+            --accent-magenta: #ff007f;
+            --text-main: #f1f5f9;
+            --text-muted: #94a3b8;
+            --radius-lg: 16px;
+            --radius-sm: 8px;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Inter', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            min-height: 100vh;
+            background-image: 
+                radial-gradient(circle at 15% 15%, rgba(0, 242, 254, 0.08) 0%, transparent 40%),
+                radial-gradient(circle at 85% 85%, rgba(255, 0, 127, 0.06) 0%, transparent 40%);
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Header */
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 40px;
+            background: rgba(7, 9, 14, 0.8);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--bg-card-border);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .logo-container {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .logo-title {
+            font-family: 'Outfit', sans-serif;
+            font-size: 26px;
+            font-weight: 800;
+            background: linear-gradient(135deg, #00f2fe 0%, #4facfe 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            letter-spacing: -0.5px;
+        }
+
+        .badge-version {
+            background: rgba(0, 242, 254, 0.12);
+            color: var(--primary-glow);
+            border: 1px solid rgba(0, 242, 254, 0.3);
+            font-size: 11px;
+            font-weight: 600;
+            padding: 4px 10px;
+            border-radius: 20px;
+            text-transform: uppercase;
+        }
+
+        .status-pill {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: var(--bg-card);
+            border: 1px solid var(--bg-card-border);
+            padding: 8px 16px;
+            border-radius: 30px;
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+
+        .dot-status {
+            width: 8px;
+            height: 8px;
+            background-color: #10b981;
+            border-radius: 50%;
+            box-shadow: 0 0 10px #10b981;
+        }
+
+        /* Layout Main */
+        main {
+            max-width: 1300px;
+            margin: 30px auto;
+            padding: 0 20px;
+            flex: 1;
+            width: 100%;
+        }
+
+        .grid-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+        }
+
+        @media (max-width: 992px) {
+            .grid-container {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Cards Component */
+        .glass-card {
+            background: var(--bg-card);
+            border: 1px solid var(--bg-card-border);
+            backdrop-filter: blur(16px);
+            border-radius: var(--radius-lg);
+            padding: 30px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+            display: flex;
+            flex-direction: column;
+            gap: 22px;
+        }
+
+        .card-header {
+            font-family: 'Outfit', sans-serif;
+            font-size: 20px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            border-bottom: 1px solid var(--bg-card-border);
+            padding-bottom: 14px;
+        }
+
+        .card-header span {
+            color: var(--primary-glow);
+        }
+
+        /* Form Controls */
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        label {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        textarea, input[type="text"] {
+            width: 100%;
+            background: rgba(10, 14, 26, 0.7);
+            border: 1px solid var(--bg-card-border);
+            border-radius: var(--radius-sm);
+            padding: 12px 16px;
+            color: var(--text-main);
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+
+        textarea:focus, input[type="text"]:focus {
+            outline: none;
+            border-color: var(--primary-glow);
+            box-shadow: 0 0 15px rgba(0, 242, 254, 0.2);
+        }
+
+        textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+
+        /* Dropzone */
+        .dropzone {
+            border: 2px dashed rgba(0, 242, 254, 0.3);
+            border-radius: var(--radius-sm);
+            padding: 24px;
+            text-align: center;
+            background: rgba(0, 242, 254, 0.02);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .dropzone:hover {
+            border-color: var(--primary-glow);
+            background: rgba(0, 242, 254, 0.05);
+        }
+
+        .dropzone input[type="file"] {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0;
+            cursor: pointer;
+        }
+
+        .dropzone-text {
+            color: var(--text-muted);
+            font-size: 13px;
+        }
+
+        .dropzone-text strong {
+            color: var(--primary-glow);
+        }
+
+        .img-preview {
+            max-height: 160px;
+            border-radius: var(--radius-sm);
+            object-fit: cover;
+            margin-top: 10px;
+            display: none;
+            border: 1px solid var(--primary-glow);
+        }
+
+        /* Preset Prompts */
+        .presets-bar {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .preset-chip {
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid var(--bg-card-border);
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            color: var(--text-muted);
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .preset-chip:hover {
+            border-color: var(--primary-glow);
+            color: var(--primary-glow);
+        }
+
+        /* Submit Button */
+        .btn-generate {
+            background: linear-gradient(135deg, #00f2fe 0%, #4facfe 100%);
+            color: #07090e;
+            font-family: 'Outfit', sans-serif;
+            font-weight: 700;
+            font-size: 16px;
+            padding: 16px;
+            border: none;
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            box-shadow: 0 0 20px rgba(0, 242, 254, 0.4);
+        }
+
+        .btn-generate:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 0 30px rgba(0, 242, 254, 0.7);
+        }
+
+        .btn-generate:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        /* Video Output Panel */
+        .output-viewport {
+            min-height: 380px;
+            background: rgba(7, 9, 14, 0.9);
+            border-radius: var(--radius-sm);
+            border: 1px solid var(--bg-card-border);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        video {
+            width: 100%;
+            height: 100%;
+            border-radius: var(--radius-sm);
+            display: none;
+            object-fit: cover;
+        }
+
+        .loader-box {
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 4px solid rgba(0, 242, 254, 0.1);
+            border-left-color: var(--primary-glow);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .progress-bar-bg {
+            width: 200px;
+            height: 6px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .progress-bar-fill {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, #00f2fe, #ff007f);
+            transition: width 0.4s ease;
+        }
+
+        /* Footer */
+        footer {
+            text-align: center;
+            padding: 20px;
+            color: var(--text-muted);
+            font-size: 12px;
+            border-top: 1px solid var(--bg-card-border);
+            margin-top: 40px;
+        }
+
+        .doc-link {
+            color: var(--primary-glow);
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .doc-link:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Header -->
+    <header>
+        <div class="logo-container">
+            <div class="logo-title">VideoForge</div>
+            <div class="badge-version">LTX-Video v2.3</div>
+        </div>
+        <div class="status-pill">
+            <div class="dot-status" id="hwDot"></div>
+            <span id="hwStatus">AWS ECS GPU (Active)</span>
+            <a href="/docs" target="_blank" class="doc-link" style="margin-left:10px;">OpenAPI Docs ↗</a>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main>
+        <div class="grid-container">
+            
+            <!-- Left Column: Form Controls -->
+            <div class="glass-card">
+                <div class="card-header">
+                    <span>🎬</span> Parámetros de Generación
+                </div>
+
+                <!-- Imagen de Referencia -->
+                <div class="form-group">
+                    <label>1. Imagen de Origen / Referencia</label>
+                    <div class="dropzone" id="dropzone">
+                        <input type="file" id="imageInput" accept="image/*">
+                        <div class="dropzone-text">
+                            <strong>Haz clic aquí</strong> o arrastra una imagen (PNG, JPG)
+                        </div>
+                        <img id="imgPreview" class="img-preview" alt="Preview">
+                    </div>
+                    <input type="text" id="s3UriInput" placeholder="O ingresa una URI S3/HTTP (e.g. s3://bucket/photo.png)" style="margin-top:6px;">
+                </div>
+
+                <!-- Prompt -->
+                <div class="form-group">
+                    <label>2. Prompt de Animación por Texto</label>
+                    <textarea id="promptInput" placeholder="Describe el movimiento, cámara y efectos de iluminación deseados..."></textarea>
+                    
+                    <!-- Presets -->
+                    <div class="presets-bar">
+                        <div class="preset-chip" onclick="setPreset('Futuristic cyberpunk car driving in glowing neon rain with high speed cinematic camera')">⚡ Cyberpunk</div>
+                        <div class="preset-chip" onclick="setPreset('Cinematic drone orbital camera around an ancient temple in misty mountains')">🏔️ Montaña Mística</div>
+                        <div class="preset-chip" onclick="setPreset('Neon anime portrait with glowing eyes, dynamic hair animation and wind effects')">✨ Anime Neon</div>
+                    </div>
+                </div>
+
+                <!-- Parámetros Avanzados -->
+                <details style="color:var(--text-muted); font-size:13px; cursor:pointer;">
+                    <summary style="font-weight:600; margin-bottom:10px;">⚙️ Configuración de Inferencia (Avanzado)</summary>
+                    <div style="display:grid; grid-template-columns: 1fr 1fr; gap:12px; margin-top:10px;">
+                        <div class="form-group">
+                            <label>Frames</label>
+                            <input type="text" id="framesInput" value="121">
+                        </div>
+                        <div class="form-group">
+                            <label>FPS</label>
+                            <input type="text" id="fpsInput" value="24">
+                        </div>
+                    </div>
+                </details>
+
+                <!-- Botón Generar -->
+                <button class="btn-generate" id="generateBtn" onclick="submitGeneration()">
+                    🚀 Generar Video con IA
+                </button>
+            </div>
+
+            <!-- Right Column: Output Viewport -->
+            <div class="glass-card">
+                <div class="card-header">
+                    <span>📺</span> Renderizado & Vista Previa
+                </div>
+
+                <div class="output-viewport" id="viewport">
+                    
+                    <!-- State Idle -->
+                    <div id="idleState" style="text-align:center; color:var(--text-muted);">
+                        <div style="font-size:48px; margin-bottom:12px;">✨</div>
+                        <p style="font-size:15px; font-weight:500;">Listo para la generación</p>
+                        <p style="font-size:12px; opacity:0.7;">Sube una imagen y escribe un prompt para iniciar</p>
+                    </div>
+
+                    <!-- State Loading -->
+                    <div class="loader-box" id="loaderState">
+                        <div class="spinner"></div>
+                        <p id="statusMsg" style="font-weight:600; color:var(--primary-glow);">Encolando trabajo en AWS ECS GPU...</p>
+                        <div class="progress-bar-bg">
+                            <div class="progress-bar-fill" id="progressFill"></div>
+                        </div>
+                        <span id="jobIdTag" style="font-size:11px; color:var(--text-muted);">Job ID: -</span>
+                    </div>
+
+                    <!-- State Video Output -->
+                    <video id="videoPlayer" controls autoplay loop></video>
+                </div>
+
+                <!-- Actions output -->
+                <div id="outputActions" style="display:none; gap:10px;">
+                    <a id="downloadBtn" href="#" target="_blank" download class="btn-generate" style="flex:1; text-decoration:none;">
+                        ⬇️ Descargar Video MP4
+                    </a>
+                </div>
+
+            </div>
+
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer>
+        VideoForge MLOps Infrastructure • Powered by AWS ECS (G5 GPU Nodes), PyTorch 2.3 & FastAPI • LTX-Video v2.3
+    </footer>
+
+    <script>
+        let currentS3Uri = "";
+
+        // Hardware info update
+        async function checkHardware() {
+            try {
+                const res = await fetch('/api/v1/hardware');
+                if(res.ok) {
+                    const data = await res.json();
+                    if(data.cuda_available) {
+                        document.getElementById('hwDot').style.backgroundColor = '#10b981';
+                        document.getElementById('hwStatus').innerText = `GPU: ${data.device_name} (${data.vram_total_gb} GB VRAM)`;
+                    } else {
+                        document.getElementById('hwDot').style.backgroundColor = '#f59e0b';
+                        document.getElementById('hwStatus').innerText = `Modo CPU / Simulación AWS`;
+                    }
+                }
+            } catch(e) {
+                console.log("Hardware status fetch error:", e);
+            }
+        }
+
+        checkHardware();
+
+        // Preset Prompt
+        function setPreset(text) {
+            document.getElementById('promptInput').value = text;
+        }
+
+        // Image Drag & Drop Preview & Upload
+        const dropzone = document.getElementById('dropzone');
+        const imageInput = document.getElementById('imageInput');
+        const imgPreview = document.getElementById('imgPreview');
+
+        imageInput.addEventListener('change', async (e) => {
+            const file = e.target.files[0];
+            if(file) {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    imgPreview.src = e.target.result;
+                    imgPreview.style.display = 'block';
+                };
+                reader.readAsDataURL(file);
+
+                // Auto upload to /api/v1/upload-image
+                const formData = new FormData();
+                formData.append('file', file);
+
+                try {
+                    const uploadRes = await fetch('/api/v1/upload-image', {
+                        method: 'POST',
+                        body: formData
+                    });
+                    if(uploadRes.ok) {
+                        const uploadData = await uploadRes.json();
+                        currentS3Uri = uploadData.s3_uri;
+                        document.getElementById('s3UriInput').value = currentS3Uri;
+                    }
+                } catch(err) {
+                    console.error("Image upload error:", err);
+                }
+            }
+        });
+
+        // Submit Generation
+        async function submitGeneration() {
+            const prompt = document.getElementById('promptInput').value.trim();
+            let imageFile = document.getElementById('s3UriInput').value.trim() || currentS3Uri;
+
+            if(!prompt) {
+                alert("Por favor ingresa un prompt de texto para la animación.");
+                return;
+            }
+
+            if(!imageFile) {
+                imageFile = "s3://videoforge-inputs/sample_default.png";
+            }
+
+            // UI state updating
+            document.getElementById('idleState').style.display = 'none';
+            document.getElementById('videoPlayer').style.display = 'none';
+            document.getElementById('loaderState').style.display = 'flex';
+            document.getElementById('generateBtn').disabled = true;
+            document.getElementById('progressFill').style.width = '10%';
+            document.getElementById('statusMsg').innerText = 'Encolando en la infraestructura GPU...';
+
+            try {
+                const response = await fetch('/api/v1/generate', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        prompt: prompt,
+                        image_file: imageFile,
+                        num_frames: parseInt(document.getElementById('framesInput').value) || 121,
+                        fps: parseInt(document.getElementById('fpsInput').value) || 24
+                    })
+                });
+
+                if(!response.ok) {
+                    throw new Error("Error en la respuesta del servidor");
+                }
+
+                const data = await response.json();
+                document.getElementById('jobIdTag').innerText = `Job ID: ${data.job_id}`;
+                document.getElementById('progressFill').style.width = '35%';
+
+                // Start Polling Status
+                pollJobStatus(data.job_id);
+
+            } catch(err) {
+                alert("Error al enviar el trabajo de generación: " + err.message);
+                resetUI();
+            }
+        }
+
+        // Poll Job Status
+        async function pollJobStatus(jobId) {
+            let progress = 35;
+            const interval = setInterval(async () => {
+                try {
+                    const res = await fetch(`/api/v1/jobs/${jobId}`);
+                    if(res.ok) {
+                        const job = await res.json();
+
+                        if(job.status === 'processing') {
+                            document.getElementById('statusMsg').innerText = 'Ejecutando inferencia LTX-Video 2.3 en GPU...';
+                            progress = Math.min(progress + 10, 85);
+                            document.getElementById('progressFill').style.width = progress + '%';
+                        } else if(job.status === 'completed') {
+                            clearInterval(interval);
+                            document.getElementById('progressFill').style.width = '100%';
+                            document.getElementById('statusMsg').innerText = '¡Generación Completada!';
+                            
+                            setTimeout(() => {
+                                showVideo(job.video_url || 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4');
+                            }, 500);
+                        } else if(job.status === 'failed') {
+                            clearInterval(interval);
+                            alert("El trabajo falló: " + (job.error || "Error desconocido"));
+                            resetUI();
+                        }
+                    }
+                } catch(e) {
+                    console.error("Polling error:", e);
+                }
+            }, 3000);
+        }
+
+        function showVideo(url) {
+            document.getElementById('loaderState').style.display = 'none';
+            const video = document.getElementById('videoPlayer');
+            video.src = url;
+            video.style.display = 'block';
+            document.getElementById('outputActions').style.display = 'flex';
+            document.getElementById('downloadBtn').href = url;
+            document.getElementById('generateBtn').disabled = false;
+        }
+
+        function resetUI() {
+            document.getElementById('loaderState').style.display = 'none';
+            document.getElementById('idleState').style.display = 'block';
+            document.getElementById('generateBtn').disabled = false;
+        }
+    </script>
+</body>
+</html>
