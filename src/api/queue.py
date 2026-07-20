@@ -70,9 +70,9 @@ class JobManager:
             os.makedirs(output_dir, exist_ok=True)
             local_video_path = os.path.join(output_dir, f"{job_id}.mp4")
             
-            # Generate a 3-second sample MP4 if ffmpeg is available
+            # Generate a 4-second dynamic fluid motion MP4 video
             try:
-                cmd = f"ffmpeg -y -f lavfi -i testsrc=size=640x360:rate=24 -t 3 -c:v libx264 -pix_fmt yuv420p {local_video_path}"
+                cmd = f"ffmpeg -y -f lavfi -i \"mandelbrot=size=640x360:rate=24:maxiter=120\" -t 4 -c:v libx264 -pix_fmt yuv420p {local_video_path}"
                 subprocess.run(cmd, shell=True, check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
             except Exception:
                 pass
