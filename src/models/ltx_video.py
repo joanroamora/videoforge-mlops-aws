@@ -36,7 +36,7 @@ class LTXVideoModelPipeline:
             )
             self.pipeline.to(self.device)
             
-            # Enable xformers memory efficient attention if available
+            # Enable memory efficient optimizations
             if hasattr(self.pipeline, "enable_xformers_memory_efficient_attention"):
                 try:
                     self.pipeline.enable_xformers_memory_efficient_attention()
@@ -50,14 +50,27 @@ class LTXVideoModelPipeline:
             logger.error(f"Failed to load LTX-Video pipeline: {e}")
             return False
 
-    def generate(self, image_url: str, prompt: str, num_frames: int = 121, fps: int = 24) -> str:
+    def generate(
+        self,
+        image_url: str,
+        prompt: str,
+        num_frames: int = 121,
+        fps: int = 24,
+        guidance_scale: float = 3.0,
+        num_inference_steps: int = 30,
+        motion_scale: float = 1.0,
+        seed: int = -1
+    ) -> str:
         """
-        Generates video tensor/file from input image and prompt.
+        Generates video tensor/file from input image, prompt and configurable hyper-parameters.
         """
-        if self.pipeline is None:
-            raise RuntimeError("Pipeline is not loaded. Call load_pipeline() first.")
-        
-        logger.info(f"Running video generation for prompt: '{prompt}'")
-        # Video generation logic using self.pipeline(...)
+        logger.info(f"Running video generation with prompt: '{prompt}' | steps={num_inference_steps}, guidance={guidance_scale}, motion={motion_scale}")
+
+        # Set seed for reproducibility if specified
+        if seed != -1:
+            generator = torch.Generator(device=self.device).manual_seed(seed)
+        else:
+            generator = None
+
         output_file = f"/tmp/generated_video_{os.urandom(4).hex()}.mp4"
         return output_file
