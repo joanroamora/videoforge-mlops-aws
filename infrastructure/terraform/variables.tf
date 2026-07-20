@@ -19,13 +19,13 @@ variable "project_name" {
 variable "use_gpu" {
   type        = bool
   description = "Definir en true para instancias GPU G5 (requiere cuotas de vCPU GPU > 0 en AWS). Definir en false para pruebas con CPU (c5.xlarge / t3.large)."
-  default     = false
+  default     = true
 }
 
 variable "instance_type" {
   type        = string
-  description = "Tipo de instancia EC2 para ECS (g5.xlarge para GPU, c5.xlarge/t3.large para pruebas CPU)"
-  default     = "c5.xlarge"
+  description = "Tipo de instancia EC2 para ECS (g5.xlarge para GPU NVIDIA A10G 24GB VRAM)"
+  default     = "g5.xlarge"
 }
 
 variable "desired_capacity" {
